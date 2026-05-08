@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DNOSP / EDU-NC - Plateforme d'Aide à la Décision Pédagogique
 
-## Getting Started
+Cette plateforme est un outil ERP institutionnel conçu pour la **Direction Nationale d’Orientation Scolaire et Professionnelle (DNOSP)**. Elle permet d'enregistrer, de suivre et d'analyser les résultats des élèves de la 1ère à la 4ème Humanité Pédagogique Rénovée (HPR).
 
-First, run the development server:
+## 🚀 Fonctionnalités Clés
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Authentification Sécurisée** : Accès restreint par rôles (Administrateur vs Conseiller).
+- **Tableau de Bord ERP** : Vue d'ensemble interactive et responsive.
+- **Importation Excel** : Intégration massive de données d'élèves en un clic.
+- **Matrice de Suivi** : Classification automatique des élèves selon 4 profils stratégiques et recommandations pédagogiques personnalisées.
+- **Statistiques & Graphiques** : Analyse visuelle par province et au niveau national pour dégager des conclusions stratégiques.
+- **Gestion Administrative** : Création de comptes utilisateurs et suppression sécurisée d'élèves.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Stack Technique
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework** : [Next.js 15](https://nextjs.org/) (App Router)
+- **Langage** : TypeScript
+- **Style** : Tailwind CSS & Lucide React
+- **Base de données** : SQLite avec [Prisma ORM](https://www.prisma.io/)
+- **Authentification** : NextAuth.js
+- **Graphiques** : Recharts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Installation et Configuration
 
-## Learn More
+1. **Cloner le projet** :
+   ```bash
+   git clone https://github.com/votre-compte/dnosp-platform.git
+   cd dnosp-platform
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Installer les dépendances** :
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Configurer les variables d'environnement** :
+   - Renommez `.env.example` en `.env`.
+   - Modifiez `NEXTAUTH_SECRET` par une clé sécurisée.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Initialiser la base de données** :
+   ```bash
+   npx prisma db push
+   npx prisma db seed
+   ```
 
-## Deploy on Vercel
+5. **Lancer le serveur de développement** :
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔐 Identifiants par défaut (Seed)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Administrateur Principal** :
+  - Email : `admin@plateforme.cd`
+  - Mot de passe : `admin123`
+- **Utilisateur Provincial** :
+  - Email : `user@kinshasa.cd`
+  - Mot de passe : `user123`
+
+## 📂 Structure du Projet
+
+- `/src/app` : Routes et pages de l'application.
+- `/src/components` : Composants UI réutilisables (Sidebar, Modales, Graphiques).
+- `/src/lib` : Logique métier (Auth, Prisma, Recommandations).
+- `/prisma` : Schéma de base de données et scripts de seed.
+- `/public` : Assets statiques (Logos, Photos).
+
+---
+© 2026 DNOSP / EDU-NC. Tous droits réservés.

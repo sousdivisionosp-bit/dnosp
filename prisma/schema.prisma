@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String
+  role          String    @default("USER") // ADMIN, USER
+  province      String?   // For filtering students
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Student {
+  id                String   @id @default(cuid())
+  province          String   // Province éducationnelle
+  etablissement     String   // Etablissements scolaire
+  ville             String   // Ville (cité)
+  nom               String   // Nom du candidat
+  postNom           String?  // Post Nom du candidat
+  prenom            String   // Prénom du candidat
+  sexe              String   // Sexe
+  codeEleve         String   @unique // Code élève
+  lieuNaissance     String   // Lieu de naissance
+  dateNaissance     DateTime // Date de naissance
+  avisTest          String   // AVIS du test
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
