@@ -58,7 +58,7 @@ export default async function MatrixPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
             <ClipboardList className="text-blue-600" size={32} />
-            Matrice de Suivi Pédagogique
+            Matrice de Suivi Pédagogique Psychopédagogique 
           </h1>
           <p className="text-slate-500 mt-1">
             Cadre d'intervention et d'accompagnement. Total élèves : <span className="font-bold text-slate-900">{studentsData.length}</span>

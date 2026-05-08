@@ -47,10 +47,10 @@ export async function POST(req: Request) {
     const errors = [];
     
     for (let i = 0; i < data.length; i++) {
-      const rawRow = data[i];
+      const rawRow = data[i] as Record<string, any>;
       try {
         // Normalize keys: trim spaces and lowercase for easy matching
-        const row: any = {};
+        const row: Record<string, any> = {};
         Object.keys(rawRow).forEach(key => {
           const normalizedKey = key.trim().toLowerCase();
           row[normalizedKey] = rawRow[key];
