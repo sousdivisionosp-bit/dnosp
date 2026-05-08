@@ -24,8 +24,11 @@ interface DashboardStatsProps {
 export default function DashboardClient({ students, isAdmin }: DashboardStatsProps) {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [schoolSearch, setSchoolSearch] = useState("");
+  const [selectedSchool, setSelectedSchool] = useState("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Get unique schools for the filter dropdown
+  const schools = Array.from(new Set(students.map(s => s.etablissement))).sort();
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer l'élève ${name} ?`)) return;
@@ -65,7 +68,7 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
     const matchesSearch = fullName.includes(search.toLowerCase()) || 
                          s.codeEleve?.toLowerCase().includes(search.toLowerCase());
     
-    const matchesSchool = s.etablissement?.toLowerCase().includes(schoolSearch.toLowerCase());
+    const matchesSchool = selectedSchool === "all" || s.etablissement === selectedSchool;
     
     return matchesFilter && matchesSearch && matchesSchool;
   });
@@ -115,31 +118,36 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Nom ou code élève..."
+              placeholder="Rechercher par nom ou code..."
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="relative flex-grow max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Rechercher par école..."
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
-              value={schoolSearch}
-              onChange={(e) => setSchoolSearch(e.target.value)}
-            />
+          
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500 font-medium whitespace-nowrap">École:</span>
+            <select 
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[200px]"
+              value={selectedSchool}
+              onChange={(e) => setSelectedSchool(e.target.value)}
+            >
+              <option value="all">Toutes les écoles</option>
+              {schools.map(school => (
+                <option key={school} value={school}>{school}</option>
+              ))}
+            </select>
           </div>
         </div>
+
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500 font-medium whitespace-nowrap">Affichage:</span>
+          <span className="text-sm text-gray-500 font-medium whitespace-nowrap">Statut:</span>
           <select 
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
-            <option value="all">Tous les élèves</option>
+            <option value="all">Tous les statuts</option>
             <option value="risk">Élèves à Risque</option>
             <option value="monitor">Élèves à Surveiller</option>
             <option value="normal">Élèves Normaux</option>
