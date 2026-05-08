@@ -24,6 +24,7 @@ interface DashboardStatsProps {
 export default function DashboardClient({ students, isAdmin }: DashboardStatsProps) {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [schoolSearch, setSchoolSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string, name: string) => {
@@ -64,7 +65,9 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
     const matchesSearch = fullName.includes(search.toLowerCase()) || 
                          s.codeEleve?.toLowerCase().includes(search.toLowerCase());
     
-    return matchesFilter && matchesSearch;
+    const matchesSchool = s.etablissement?.toLowerCase().includes(schoolSearch.toLowerCase());
+    
+    return matchesFilter && matchesSearch && matchesSchool;
   });
 
   return (
@@ -106,19 +109,31 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <div className="relative flex-grow max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder="Rechercher par nom ou code élève..."
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <div className="flex flex-col md:flex-row gap-3 flex-grow">
+          <div className="relative flex-grow max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Nom ou code élève..."
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="relative flex-grow max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Rechercher par école..."
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+              value={schoolSearch}
+              onChange={(e) => setSchoolSearch(e.target.value)}
+            />
+          </div>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500 font-medium">Affichage:</span>
+          <span className="text-sm text-gray-500 font-medium whitespace-nowrap">Affichage:</span>
           <select 
             className="border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             value={filter}
