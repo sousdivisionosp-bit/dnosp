@@ -28,7 +28,13 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Get unique schools for the filter dropdown
-  const schools = Array.from(new Set(students.map(s => s.etablissement))).sort();
+  const schools = Array.from(new Set(students.map(s => s.etablissement).filter(Boolean))).sort();
+
+  const handleReset = () => {
+    setSearch("");
+    setSelectedSchool("all");
+    setFilter("all");
+  };
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer l'élève ${name} ?`)) return;
@@ -64,9 +70,11 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
       (filter === "monitor" && status === "monitor") ||
       (filter === "normal" && status === "normal");
     
-    const fullName = `${s.nom} ${s.postNom || ""} ${s.prenom}`.toLowerCase();
-    const matchesSearch = fullName.includes(search.toLowerCase()) || 
-                         s.codeEleve?.toLowerCase().includes(search.toLowerCase());
+    const fullName = `${s.nom || ""} ${s.postNom || ""} ${s.prenom || ""}`.toLowerCase();
+    const searchLower = search.toLowerCase();
+    const matchesSearch = search === "" || 
+                         fullName.includes(searchLower) || 
+                         (s.codeEleve && s.codeEleve.toLowerCase().includes(searchLower));
     
     const matchesSchool = selectedSchool === "all" || s.etablissement === selectedSchool;
     
@@ -152,6 +160,13 @@ export default function DashboardClient({ students, isAdmin }: DashboardStatsPro
             <option value="monitor">Élèves à Surveiller</option>
             <option value="normal">Élèves Normaux</option>
           </select>
+          
+          <button
+            onClick={handleReset}
+            className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 underline"
+          >
+            Réinitialiser
+          </button>
         </div>
       </div>
 
