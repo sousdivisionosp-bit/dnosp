@@ -24,7 +24,11 @@ export default async function StatsPage() {
         },
       })
     : await prisma.student.findMany({
-        where: { province: user.province },
+        where: { 
+          province: {
+            equals: user.province?.trim(),
+          }
+        },
         select: {
           province: true,
           avisTest: true,

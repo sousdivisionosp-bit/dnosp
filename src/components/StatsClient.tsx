@@ -26,6 +26,22 @@ interface StatsClientProps {
 }
 
 export default function StatsClient({ students }: StatsClientProps) {
+  if (!students || students.length === 0) {
+    return (
+      <div className="bg-white p-12 rounded-2xl shadow-sm border border-slate-200 text-center">
+        <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Activity className="text-slate-400" size={32} />
+        </div>
+        <h3 className="text-xl font-bold text-slate-800 mb-2">Aucune donnée disponible</h3>
+        <p className="text-slate-500 max-w-md mx-auto">
+          Il n'y a actuellement aucun élève enregistré dans la base de données pour générer des statistiques.
+          {/* @ts-ignore */}
+          Veuillez importer des données Excel depuis le tableau de bord.
+        </p>
+      </div>
+    );
+  }
+
   // Process Global Data
   const globalData = [
     { name: "Normal", value: students.filter(s => getStatusType(s.avisTest) === "normal").length, color: "#10b981" },
