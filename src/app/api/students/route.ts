@@ -28,15 +28,15 @@ export async function POST(req: Request) {
 
     const student = await prisma.student.create({
       data: {
-        province,
-        etablissement,
-        ville,
-        nom,
-        postNom,
-        prenom,
+        province: String(province).trim(),
+        etablissement: String(etablissement).trim(),
+        ville: String(ville).trim(),
+        nom: String(nom).trim(),
+        postNom: postNom ? String(postNom).trim() : null,
+        prenom: String(prenom).trim(),
         sexe,
-        codeEleve,
-        lieuNaissance,
+        codeEleve: String(codeEleve).trim(),
+        lieuNaissance: String(lieuNaissance).trim(),
         dateNaissance: new Date(dateNaissance),
         avisTest,
       },

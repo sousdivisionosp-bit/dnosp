@@ -75,8 +75,10 @@ export async function POST(req: Request) {
         // Map Excel columns to database fields using normalized lowercase keys
         const codeEleve = String(row["code élève"] || row["codeélève"] || row["code eleve"] || row["code"] || `TEMP-${Date.now()}-${i}`).trim();
         
+        const province = String(row["province"] || row["province éducationnelle"] || "Non spécifiée").trim();
+        
         const studentData = {
-          province: String(row["province"] || row["province éducationnelle"] || "Non spécifiée").trim(),
+          province: province,
           etablissement: String(row["etablissement"] || row["etablissements scolaire"] || "Non spécifié").trim(),
           ville: String(row["ville"] || row["ville (cité)"] || row["ville (ou ville (cité) )"] || "Non spécifiée").trim(),
           nom: String(row["nom"] || row["nom du candidat"] || "Inconnu").trim(),

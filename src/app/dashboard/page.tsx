@@ -20,7 +20,11 @@ export default async function DashboardPage() {
         orderBy: { createdAt: "desc" },
       })
     : await prisma.student.findMany({
-        where: { province: user.province },
+        where: { 
+          province: {
+            equals: user.province?.trim(),
+          }
+        },
         orderBy: { createdAt: "desc" },
       });
 
