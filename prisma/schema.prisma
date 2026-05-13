@@ -34,6 +34,7 @@ model Student {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   grades            Grade[]
+  vocationFollowups VocationFollowup[]
 }
 
 model Grade {
@@ -46,6 +47,22 @@ model Grade {
   date          DateTime @default(now())
   responsable   String   // Responsable de l'activité
   observation   String?  // Observation
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model VocationFollowup {
+  id            String   @id @default(cuid())
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  trimester     Int      // 1, 2, 3
+  interest      Int      // 1-5
+  implication   Int      // 1-5
+  participation Int      // 1-5
+  motivation    Int      // 1-5
+  date          DateTime @default(now())
+  responsable   String
+  observation   String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

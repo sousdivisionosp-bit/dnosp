@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getRecommendation, getStatusType } from "@/lib/recommendations";
 import GradesSection from "@/components/GradesSection";
 import GradeEvolutionChart from "@/components/GradeEvolutionChart";
+import VocationSection from "@/components/VocationSection";
+import VocationRadarChart from "@/components/VocationRadarChart";
 
 export default async function StudentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -23,6 +25,9 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           { trimester: "asc" },
           { date: "asc" }
         ]
+      },
+      vocationFollowups: {
+        orderBy: { trimester: "asc" }
       }
     }
   });
@@ -45,6 +50,14 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
     date: g.date.toISOString(),
     createdAt: g.createdAt.toISOString(),
     updatedAt: g.updatedAt.toISOString(),
+  }));
+
+  // Serialize vocation followups
+  const serializedVocation = student.vocationFollowups.map(v => ({
+    ...v,
+    date: v.date.toISOString(),
+    createdAt: v.createdAt.toISOString(),
+    updatedAt: v.updatedAt.toISOString(),
   }));
 
   return (
@@ -117,15 +130,24 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      {/* Chart Section */}
-      <GradeEvolutionChart grades={serializedGrades} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <GradeEvolutionChart grades={serializedGrades} />
+        <VocationRadarChart followups={serializedVocation as any} />
+      </div>
 
-      {/* Grades Section */}
-      <GradesSection 
-        studentId={student.id} 
-        initialGrades={serializedGrades as any} 
-        isAdmin={user.role === "ADMIN"} 
-      />
+      <div className="space-y-12">
+        <VocationSection 
+          studentId={student.id} 
+          initialFollowups={serializedVocation as any} 
+          isAdmin={user.role === "ADMIN"} 
+        />
+
+        <GradesSection 
+          studentId={student.id} 
+          initialGrades={serializedGrades as any} 
+          isAdmin={user.role === "ADMIN"} 
+        />
+      </div>
     </div>
   );
 }
