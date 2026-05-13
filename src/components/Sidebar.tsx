@@ -14,7 +14,8 @@ import {
   GraduationCap,
   ChevronRight,
   BarChart3,
-  ClipboardList
+  ClipboardList,
+  TrendingUp
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
