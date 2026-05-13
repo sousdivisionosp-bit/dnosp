@@ -134,7 +134,10 @@ export default function Sidebar() {
         {/* Logout Section */}
         <div className="p-4 border-t border-slate-800">
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={async () => {
+              await signOut({ redirect: false });
+              window.location.href = "/login";
+            }}
             className="flex items-center space-x-3 w-full px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all duration-200"
           >
             <LogOut size={20} />
