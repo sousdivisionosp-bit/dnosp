@@ -3,6 +3,8 @@ import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getRecommendation, getStatusType } from "@/lib/recommendations";
+import GradesSection from "@/components/GradesSection";
+import GradeEvolutionChart from "@/components/GradeEvolutionChart";
 
 export default async function StudentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,6 +17,14 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
   const user = session.user as any;
   const student = await prisma.student.findUnique({
     where: { id: id },
+    include: {
+      grades: {
+        orderBy: [
+          { trimester: "asc" },
+          { date: "asc" }
+        ]
+      }
+    }
   });
 
   if (!student) {
@@ -29,78 +39,93 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
   const recommendation = getRecommendation(student.avisTest);
   const statusType = getStatusType(student.avisTest);
 
+  // Serialize grades for the client component
+  const serializedGrades = student.grades.map(g => ({
+    ...g,
+    date: g.date.toISOString(),
+    createdAt: g.createdAt.toISOString(),
+    updatedAt: g.updatedAt.toISOString(),
+  }));
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 pb-20">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
           Détails de l'élève : {student.nom} {student.prenom}
         </h1>
         <a
           href="/dashboard"
-          className="text-blue-600 hover:underline flex items-center"
+          className="text-blue-600 hover:underline flex items-center font-bold"
         >
-          Retour au tableau de bord
+          ← Retour au tableau de bord
         </a>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8 border border-slate-200">
-        <div className="px-4 py-5 sm:px-6 bg-slate-50 border-b border-slate-200">
-          <h3 className="text-lg leading-6 font-bold text-slate-900">
-            Informations Personnelles
-          </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 bg-white shadow-sm overflow-hidden rounded-2xl border border-slate-200">
+          <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
+            <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">
+              Informations Personnelles
+            </h3>
+          </div>
+          <div className="p-0">
+            <dl className="divide-y divide-slate-100">
+              <div className="px-6 py-4 grid grid-cols-3 gap-4">
+                <dt className="text-xs font-bold text-slate-400 uppercase">Code</dt>
+                <dd className="text-sm text-slate-900 col-span-2 font-bold">{student.codeEleve}</dd>
+              </div>
+              <div className="px-6 py-4 grid grid-cols-3 gap-4">
+                <dt className="text-xs font-bold text-slate-400 uppercase">Sexe</dt>
+                <dd className="text-sm text-slate-900 col-span-2 font-medium">{student.sexe}</dd>
+              </div>
+              <div className="px-6 py-4 grid grid-cols-3 gap-4">
+                <dt className="text-xs font-bold text-slate-400 uppercase">Naissance</dt>
+                <dd className="text-sm text-slate-900 col-span-2 font-medium">
+                  {student.lieuNaissance}, le {new Date(student.dateNaissance).toLocaleDateString("fr-FR")}
+                </dd>
+              </div>
+              <div className="px-6 py-4 grid grid-cols-3 gap-4">
+                <dt className="text-xs font-bold text-slate-400 uppercase">École</dt>
+                <dd className="text-sm text-slate-900 col-span-2 font-medium">
+                  {student.etablissement} ({student.ville}, {student.province})
+                </dd>
+              </div>
+            </dl>
+          </div>
         </div>
-        <div className="border-t border-gray-200">
-          <dl>
-            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-bold text-slate-500 uppercase tracking-wider">Code élève</dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-medium">{student.codeEleve}</dd>
+
+        <div className={`p-6 rounded-2xl shadow-sm border-2 ${
+          statusType === 'risk' ? "bg-red-50/50 border-red-200 text-red-900" : 
+          statusType === 'monitor' ? "bg-orange-50/50 border-orange-200 text-orange-900" : 
+          "bg-emerald-50/50 border-emerald-200 text-emerald-900"
+        }`}>
+          <div className="flex flex-col h-full">
+            <div className="mb-4">
+              <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
+                statusType === 'risk' ? "bg-red-600 text-white" : 
+                statusType === 'monitor' ? "bg-orange-500 text-white" : 
+                "bg-emerald-600 text-white"
+              }`}>
+                {statusType === 'risk' ? "À Risque" : statusType === 'monitor' ? "À Surveiller" : "Normal"}
+              </span>
+              <h3 className="text-lg font-bold mt-2">Recommandation</h3>
             </div>
-            <div className="bg-slate-50/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-bold text-slate-500 uppercase tracking-wider">Sexe</dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-medium">{student.sexe}</dd>
-            </div>
-            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-bold text-slate-500 uppercase tracking-wider">Lieu et Date de naissance</dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-medium">
-                {student.lieuNaissance}, le {new Date(student.dateNaissance).toLocaleDateString("fr-FR")}
-              </dd>
-            </div>
-            <div className="bg-slate-50/50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-bold text-slate-500 uppercase tracking-wider">Etablissement</dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-medium">
-                {student.etablissement} ({student.ville}, {student.province})
-              </dd>
-            </div>
-            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-bold text-slate-500 uppercase tracking-wider">Avis du Test</dt>
-              <dd className="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-bold italic">
-                "{student.avisTest}"
-              </dd>
-            </div>
-          </dl>
+            <p className="text-sm leading-relaxed font-medium italic opacity-90 flex-grow">
+              "{recommendation}"
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className={`border-l-4 p-6 rounded-r-xl shadow-sm ${
-        statusType === 'risk' ? "bg-red-50 border-red-500" : 
-        statusType === 'monitor' ? "bg-orange-50 border-orange-500" : 
-        "bg-emerald-50 border-emerald-500"
-      }`}>
-        <h3 className={`text-lg font-bold mb-4 flex items-center ${
-          statusType === 'risk' ? "text-red-800" : 
-          statusType === 'monitor' ? "text-orange-800" : 
-          "text-emerald-800"
-        }`}>
-          Recommandation DNOSP / EDU-NC
-        </h3>
-        <p className={`text-base leading-relaxed font-medium ${
-          statusType === 'risk' ? "text-red-700" : 
-          statusType === 'monitor' ? "text-orange-700" : 
-          "text-emerald-700"
-        }`}>
-          {recommendation}
-        </p>
-      </div>
+      {/* Chart Section */}
+      <GradeEvolutionChart grades={serializedGrades} />
+
+      {/* Grades Section */}
+      <GradesSection 
+        studentId={student.id} 
+        initialGrades={serializedGrades as any} 
+        isAdmin={user.role === "ADMIN"} 
+      />
     </div>
   );
 }

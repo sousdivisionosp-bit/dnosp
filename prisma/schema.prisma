@@ -33,4 +33,19 @@ model Student {
   avisTest          String   // AVIS du test
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  grades            Grade[]
+}
+
+model Grade {
+  id            String   @id @default(cuid())
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course        String   // Français, Psychopédagogie, Méthodologie, Didactique, Mathématiques, Stage pédagogique
+  trimester     Int      // 1, 2, 3
+  result        Float    // Note / Résultat
+  date          DateTime @default(now())
+  responsable   String   // Responsable de l'activité
+  observation   String?  // Observation
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
