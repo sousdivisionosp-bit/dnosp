@@ -43,6 +43,12 @@ export default function Sidebar() {
       icon: <ClipboardList size={20} />,
       active: pathname === "/dashboard/matrix"
     },
+    { 
+      title: "Synthèse Suivi", 
+      href: "/dashboard/summary", 
+      icon: <TrendingUp size={20} />,
+      active: pathname === "/dashboard/summary"
+    },
     ...(isAdmin ? [
       { 
         title: "Nouvel Élève", 
